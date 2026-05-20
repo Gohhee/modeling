@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f4ef" />
+    <title>Divide_B_260513 AR Viewer</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f4ef;
+        --surface: #ffffff;
+        --ink: #1b1b1d;
+        --muted: #686b73;
+        --line: #d8d3ca;
+        --accent: #0f766e;
+        --accent-strong: #0b5f59;
+        --warn: #9f4f12;
+        --error: #a33434;
+        --shadow: 0 18px 48px rgba(37, 34, 29, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family:
+          Inter, Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .page {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px clamp(18px, 4vw, 48px);
+        border-bottom: 1px solid rgba(27, 27, 29, 0.08);
+      }
+
+      .brand {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+      }
+
+      .brand strong {
+        font-size: clamp(18px, 2.4vw, 26px);
+        line-height: 1.1;
+      }
+
+      .brand span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .status-pill {
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0 13px;
+        font-size: 13px;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.62);
+      }
+
+      .status-pill.ready {
+        color: var(--accent-strong);
+        border-color: rgba(15, 118, 110, 0.32);
+        background: rgba(15, 118, 110, 0.08);
+      }
+
+      .status-pill.error {
+        color: var(--error);
+        border-color: rgba(163, 52, 52, 0.28);
+        background: rgba(163, 52, 52, 0.08);
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
+        gap: clamp(18px, 3vw, 36px);
+        align-items: stretch;
+        padding: clamp(18px, 4vw, 48px);
+      }
+
+      .viewer-shell {
+        min-height: 520px;
+        border: 1px solid var(--line);
+        background: #ece8df;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      model-viewer {
+        width: 100%;
+        height: 100%;
+        min-height: 520px;
+        --poster-color: #ece8df;
+        --progress-bar-color: var(--accent);
+        --progress-bar-height: 3px;
+      }
+
+      .ar-button {
+        position: absolute;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%);
+        height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        border: 0;
+        border-radius: 999px;
+        padding: 0 20px;
+        font: inherit;
+        font-weight: 700;
+        color: #fff;
+        background: var(--accent);
+        box-shadow: 0 12px 28px rgba(15, 118, 110, 0.28);
+        cursor: pointer;
+      }
+
+      .ar-button:hover {
+        background: var(--accent-strong);
+      }
+
+      .ar-button svg {
+        width: 19px;
+        height: 19px;
+        flex: 0 0 auto;
+      }
+
+      .panel {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        min-width: 0;
+      }
+
+      .intro {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(30px, 4vw, 48px);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .intro p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .button {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 12px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        background: var(--surface);
+        color: var(--ink);
+      }
+
+      .button.primary {
+        color: #fff;
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+
+      .button svg {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 auto;
+      }
+
+      .notice,
+      .diagnostics {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.64);
+      }
+
+      .notice {
+        color: var(--warn);
+        display: none;
+        line-height: 1.55;
+      }
+
+      .notice.visible {
+        display: block;
+      }
+
+      .diagnostics h2 {
+        margin: 0 0 12px;
+        font-size: 16px;
+      }
+
+      .checklist {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        line-height: 1.62;
+        font-size: 14px;
+      }
+
+      .checklist li + li {
+        margin-top: 8px;
+      }
+
+      .file-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .file-table th,
+      .file-table td {
+        border-top: 1px solid rgba(27, 27, 29, 0.1);
+        padding: 10px 0;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .file-table th {
+        color: var(--ink);
+        font-weight: 700;
+        width: 80px;
+      }
+
+      code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        color: var(--ink);
+        overflow-wrap: anywhere;
+      }
+
+      #errorBox {
+        display: none;
+        border-color: rgba(163, 52, 52, 0.28);
+        color: var(--error);
+        background: rgba(163, 52, 52, 0.08);
+      }
+
+      #errorBox.visible {
+        display: block;
+      }
+
+      @media (max-width: 860px) {
+        main {
+          grid-template-columns: 1fr;
+          padding: 0;
+          gap: 0;
+        }
+
+        .topbar {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background: rgba(247, 244, 239, 0.92);
+          backdrop-filter: blur(14px);
+        }
+
+        .viewer-shell {
+          min-height: 58vh;
+          border-left: 0;
+          border-right: 0;
+          box-shadow: none;
+        }
+
+        model-viewer {
+          min-height: 58vh;
+        }
+
+        .panel {
+          padding: 22px 18px 32px;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .actions {
+          grid-template-columns: 1fr;
+        }
+
+        .ar-button {
+          width: calc(100% - 36px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">
+          <strong>Divide_B_260513</strong>
+          <span>3D · Web · AR Viewer</span>
+        </div>
+        <div id="loadStatus" class="status-pill">모델 확인 중</div>
+      </header>
+
+      <main>
+        <section class="viewer-shell" aria-label="3D 제품 뷰어">
+          <model-viewer
+            id="viewer"
+            src="./Divide_B_260513.glb"
+            ios-src="./Divide_B_260513.usdz"
+            alt="Divide_B_260513 제품 3D 모델"
+            camera-controls
+            touch-action="pan-y"
+            auto-rotate
+            rotation-per-second="18deg"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            ar-scale="auto"
+            ar-placement="floor"
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+          >
+            <button slot="ar-button" class="ar-button" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 2.6 4.2 6.9v10.2L12 21.4l7.8-4.3V6.9L12 2.6Zm0 2.3 5.1 2.8L12 10.5 6.9 7.7 12 4.9ZM6.2 9.5l4.8 2.7v6.2l-4.8-2.7V9.5Zm6.8 8.9v-6.2l4.8-2.7v6.2L13 18.4Z"
+                  fill="currentColor"
+                />
+              </svg>
+              AR로 보기
+            </button>
+          </model-viewer>
+        </section>
+
+        <aside class="panel">
+          <section class="intro">
+            <h1>스마트폰에서 바로 확인하는 제품 AR</h1>
+            <p>
+              QR 코드가 이 페이지를 열면, 기기에 맞춰 Android는 WebXR 또는 Scene Viewer,
+              iPhone은 Quick Look으로 모델을 실행합니다.
+            </p>
+          </section>
+
+          <div id="browserNotice" class="notice">
+            인앱 브라우저에서는 AR 실행이 막힐 수 있습니다. iPhone은 Safari, Android는 Chrome에서
+            이 페이지를 다시 열어 주세요.
+          </div>
+
+          <div id="errorBox" class="notice"></div>
+
+          <nav class="actions" aria-label="모델 실행 링크">
+            <button id="openArButton" class="button primary" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Zm0 2.3 4.9 2.7L12 10.7 7.1 8 12 5.3Zm-5.8 5 4.8 2.6v5.3l-4.8-2.7v-5.2Zm6.8 7.9v-5.3l4.8-2.6v5.2L13 18.2Z" fill="currentColor" />
+              </svg>
+              AR 실행
+            </button>
+            <a class="button" href="./Divide_B_260513.glb" download>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4h2v8.2l2.9-2.9 1.4 1.4L12 16l-5.3-5.3 1.4-1.4 2.9 2.9V4Zm-5 14h12v2H6v-2Z" fill="currentColor" />
+              </svg>
+              GLB 확인
+            </a>
+            <a class="button" href="./Divide_B_260513.usdz" rel="ar">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v14h10V5H7Zm2 2h6v2H9V7Zm0 4h6v2H9v-2Zm0 4h4v2H9v-2Z" fill="currentColor" />
+              </svg>
+              USDZ 확인
+            </a>
+            <button id="copyButton" class="button" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 7a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-1v-2h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v1H8V7Zm-5 4a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-7Zm3-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H6Z" fill="currentColor" />
+              </svg>
+              링크 복사
+            </button>
+          </nav>
+
+          <section class="diagnostics">
+            <h2>배포 전 확인</h2>
+            <table class="file-table" aria-label="모델 파일 경로">
+              <tr>
+                <th>GLB</th>
+                <td><code>./Divide_B_260513.glb</code></td>
+              </tr>
+              <tr>
+                <th>USDZ</th>
+                <td><code>./Divide_B_260513.usdz</code></td>
+              </tr>
+              <tr>
+                <th>QR</th>
+                <td><code id="pageUrl">현재 페이지 URL</code></td>
+              </tr>
+            </table>
+          </section>
+
+          <section class="diagnostics">
+            <h2>AR 로딩 문제 체크</h2>
+            <ol class="checklist">
+              <li>QR URL은 공개 HTTPS 주소여야 합니다.</li>
+              <li>서버 MIME은 GLB <code>model/gltf-binary</code>, USDZ <code>model/vnd.usdz+zip</code>로 설정합니다.</li>
+              <li>파일명과 경로에는 공백, 한글, 특수문자를 피합니다.</li>
+              <li>GLB는 glTF Validator에서 오류가 없어야 합니다.</li>
+              <li>iPhone 인앱 브라우저에서 실패하면 Safari로 다시 엽니다.</li>
+              <li>Android에서 실패하면 Chrome, ARCore 지원 여부, 파일 용량과 텍스처 크기를 확인합니다.</li>
+            </ol>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <script>
+      const viewer = document.querySelector("#viewer");
+      const loadStatus = document.querySelector("#loadStatus");
+      const errorBox = document.querySelector("#errorBox");
+      const browserNotice = document.querySelector("#browserNotice");
+      const openArButton = document.querySelector("#openArButton");
+      const copyButton = document.querySelector("#copyButton");
+      const pageUrl = document.querySelector("#pageUrl");
+
+      const userAgent = navigator.userAgent || "";
+      const isInAppBrowser = /Instagram|FBAN|FBAV|KAKAOTALK|Line\/|NAVER|DaumApps/i.test(userAgent);
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+      pageUrl.textContent = location.href;
+
+      if (isInAppBrowser) {
+        browserNotice.classList.add("visible");
+      }
+
+      function setStatus(text, type) {
+        loadStatus.textContent = text;
+        loadStatus.className = `status-pill${type ? ` ${type}` : ""}`;
+      }
+
+      function showError(message) {
+        errorBox.textContent = message;
+        errorBox.classList.add("visible");
+        setStatus("확인 필요", "error");
+      }
+
+      viewer.addEventListener("load", () => {
+        setStatus("3D 모델 준비 완료", "ready");
+      });
+
+      viewer.addEventListener("error", (event) => {
+        const detail = event.detail && event.detail.sourceError ? ` (${event.detail.sourceError.message})` : "";
+        showError(`모델을 불러오지 못했습니다. GLB 경로, MIME, HTTPS, CORS 설정을 확인하세요.${detail}`);
+      });
+
+      viewer.addEventListener("ar-status", (event) => {
+        if (event.detail.status === "failed") {
+          showError("AR 실행에 실패했습니다. 기기의 기본 브라우저에서 다시 열고 GLB/USDZ 파일 접근 여부를 확인하세요.");
+        }
+      });
+
+      openArButton.addEventListener("click", async () => {
+        try {
+          await viewer.activateAR();
+        } catch (error) {
+          if (isIOS) {
+            location.href = viewer.getAttribute("ios-src");
+            return;
+          }
+          showError("AR을 바로 실행할 수 없습니다. Chrome 또는 Safari에서 페이지를 다시 열어 주세요.");
+        }
+      });
+
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(location.href);
+          copyButton.textContent = "복사 완료";
+          window.setTimeout(() => {
+            copyButton.textContent = "링크 복사";
+          }, 1600);
+        } catch (error) {
+          showError("브라우저 권한 때문에 링크 복사에 실패했습니다. 주소창의 URL을 사용해 주세요.");
+        }
+      });
+
+      if (!window.isSecureContext && location.protocol !== "file:") {
+        showError("현재 페이지가 HTTPS가 아닙니다. 실제 QR 배포 전 HTTPS 주소로 올려 주세요.");
+      }
+    </script>
+  </body>
+</html>
