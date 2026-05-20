@@ -4,21 +4,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f7f4ef" />
-    <title>Divide_B_260513 AR Viewer</title>
+    <title>3Rwave Product AR Viewer</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
       :root {
         color-scheme: light;
         --bg: #f7f4ef;
         --surface: #ffffff;
-        --ink: #1b1b1d;
-        --muted: #686b73;
-        --line: #d8d3ca;
+        --ink: #111216;
+        --muted: #646874;
+        --line: #d9d3c9;
         --accent: #0f766e;
-        --accent-strong: #0b5f59;
+        --accent-strong: #0a5c56;
         --warn: #9f4f12;
         --error: #a33434;
-        --shadow: 0 18px 48px rgba(37, 34, 29, 0.14);
+        --shadow: 0 18px 48px rgba(37, 34, 29, 0.12);
       }
 
       * {
@@ -49,26 +49,27 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        padding: 16px clamp(18px, 4vw, 48px);
-        border-bottom: 1px solid rgba(27, 27, 29, 0.08);
+        gap: 18px;
+        padding: 18px clamp(18px, 4vw, 48px);
+        border-bottom: 1px solid rgba(17, 18, 22, 0.08);
       }
 
       .brand {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
+        display: inline-flex;
+        align-items: baseline;
+        gap: 10px;
         min-width: 0;
       }
 
       .brand strong {
-        font-size: clamp(18px, 2.4vw, 26px);
-        line-height: 1.1;
+        font-size: clamp(24px, 3vw, 34px);
+        line-height: 1;
       }
 
       .brand span {
         color: var(--muted);
         font-size: 13px;
+        white-space: nowrap;
       }
 
       .status-pill {
@@ -99,8 +100,8 @@
 
       main {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
-        gap: clamp(18px, 3vw, 36px);
+        grid-template-columns: minmax(0, 1fr) minmax(330px, 430px);
+        gap: clamp(20px, 3vw, 36px);
         align-items: stretch;
         padding: clamp(18px, 4vw, 48px);
       }
@@ -127,6 +128,7 @@
         left: 50%;
         bottom: 24px;
         transform: translateX(-50%);
+        min-width: 178px;
         height: 46px;
         display: inline-flex;
         align-items: center;
@@ -147,9 +149,7 @@
         background: var(--accent-strong);
       }
 
-      .ar-button svg {
-        width: 19px;
-        height: 19px;
+      svg {
         flex: 0 0 auto;
       }
 
@@ -166,17 +166,22 @@
         gap: 12px;
       }
 
-      h1 {
+      h1,
+      h2,
+      p {
         margin: 0;
-        font-size: clamp(30px, 4vw, 48px);
+      }
+
+      h1 {
+        font-size: clamp(34px, 4vw, 52px);
         line-height: 1.04;
         letter-spacing: 0;
       }
 
-      .intro p {
-        margin: 0;
+      .intro p,
+      .detail-copy {
         color: var(--muted);
-        line-height: 1.65;
+        line-height: 1.68;
       }
 
       .actions {
@@ -186,7 +191,7 @@
       }
 
       .button {
-        min-height: 44px;
+        min-height: 46px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -195,10 +200,12 @@
         border-radius: 8px;
         padding: 0 12px;
         text-decoration: none;
+        font: inherit;
         font-weight: 700;
         font-size: 14px;
         background: var(--surface);
         color: var(--ink);
+        cursor: pointer;
       }
 
       .button.primary {
@@ -207,14 +214,21 @@
         border-color: var(--accent);
       }
 
+      .button:hover {
+        border-color: rgba(15, 118, 110, 0.45);
+      }
+
+      .button.primary:hover {
+        background: var(--accent-strong);
+      }
+
       .button svg {
         width: 18px;
         height: 18px;
-        flex: 0 0 auto;
       }
 
       .notice,
-      .diagnostics {
+      .content-block {
         border: 1px solid var(--line);
         border-radius: 8px;
         padding: 16px;
@@ -231,48 +245,39 @@
         display: block;
       }
 
-      .diagnostics h2 {
-        margin: 0 0 12px;
-        font-size: 16px;
+      .content-block h2 {
+        margin-bottom: 12px;
+        font-size: 17px;
+        line-height: 1.3;
       }
 
-      .checklist {
-        margin: 0;
-        padding-left: 20px;
-        color: var(--muted);
-        line-height: 1.62;
+      .spec-table {
+        width: 100%;
+        border-collapse: collapse;
         font-size: 14px;
       }
 
-      .checklist li + li {
-        margin-top: 8px;
-      }
-
-      .file-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-        color: var(--muted);
-      }
-
-      .file-table th,
-      .file-table td {
-        border-top: 1px solid rgba(27, 27, 29, 0.1);
-        padding: 10px 0;
+      .spec-table th,
+      .spec-table td {
+        border-top: 1px solid rgba(17, 18, 22, 0.1);
+        padding: 12px 0;
         text-align: left;
         vertical-align: top;
       }
 
-      .file-table th {
-        color: var(--ink);
-        font-weight: 700;
-        width: 80px;
+      .spec-table tr:first-child th,
+      .spec-table tr:first-child td {
+        border-top: 0;
       }
 
-      code {
-        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      .spec-table th {
+        width: 46%;
         color: var(--ink);
-        overflow-wrap: anywhere;
+        font-weight: 700;
+      }
+
+      .spec-table td {
+        color: var(--muted);
       }
 
       #errorBox {
@@ -286,7 +291,7 @@
         display: block;
       }
 
-      @media (max-width: 860px) {
+      @media (max-width: 900px) {
         main {
           grid-template-columns: 1fr;
           padding: 0;
@@ -313,7 +318,7 @@
         }
 
         .panel {
-          padding: 22px 18px 32px;
+          padding: 24px 18px 34px;
         }
       }
 
@@ -322,6 +327,11 @@
           align-items: flex-start;
           flex-direction: column;
           gap: 10px;
+        }
+
+        .brand {
+          flex-direction: column;
+          gap: 4px;
         }
 
         .actions {
@@ -338,19 +348,19 @@
     <div class="page">
       <header class="topbar">
         <div class="brand">
-          <strong>Divide_B_260513</strong>
-          <span>3D · Web · AR Viewer</span>
+          <strong>3Rwave</strong>
+          <span>Product AR Viewer</span>
         </div>
         <div id="loadStatus" class="status-pill">모델 확인 중</div>
       </header>
 
       <main>
-        <section class="viewer-shell" aria-label="3D 제품 뷰어">
+        <section class="viewer-shell" aria-label="제품 3D 뷰어">
           <model-viewer
             id="viewer"
             src="./Divide_B_260513.glb"
             ios-src="./Divide_B_260513.usdz"
-            alt="Divide_B_260513 제품 3D 모델"
+            alt="제품 3D 모델"
             camera-controls
             touch-action="pan-y"
             auto-rotate
@@ -364,7 +374,7 @@
             environment-image="neutral"
           >
             <button slot="ar-button" class="ar-button" type="button">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
                 <path
                   d="M12 2.6 4.2 6.9v10.2L12 21.4l7.8-4.3V6.9L12 2.6Zm0 2.3 5.1 2.8L12 10.5 6.9 7.7 12 4.9ZM6.2 9.5l4.8 2.7v6.2l-4.8-2.7V9.5Zm6.8 8.9v-6.2l4.8-2.7v6.2L13 18.4Z"
                   fill="currentColor"
@@ -377,75 +387,64 @@
 
         <aside class="panel">
           <section class="intro">
-            <h1>스마트폰에서 바로 확인하는 제품 AR</h1>
-            <p>
-              QR 코드가 이 페이지를 열면, 기기에 맞춰 Android는 WebXR 또는 Scene Viewer,
-              iPhone은 Quick Look으로 모델을 실행합니다.
-            </p>
+            <h1>제품 PN</h1>
+            <p>제품의 간단한 설명</p>
           </section>
 
           <div id="browserNotice" class="notice">
-            인앱 브라우저에서는 AR 실행이 막힐 수 있습니다. iPhone은 Safari, Android는 Chrome에서
-            이 페이지를 다시 열어 주세요.
+            인앱 브라우저에서는 AR 실행이 제한될 수 있습니다. iPhone은 Safari, Android는 Chrome에서 열어 주세요.
           </div>
 
           <div id="errorBox" class="notice"></div>
 
-          <nav class="actions" aria-label="모델 실행 링크">
+          <nav class="actions" aria-label="제품 문의 및 이동">
             <button id="openArButton" class="button primary" type="button">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Zm0 2.3 4.9 2.7L12 10.7 7.1 8 12 5.3Zm-5.8 5 4.8 2.6v5.3l-4.8-2.7v-5.2Zm6.8 7.9v-5.3l4.8-2.6v5.2L13 18.2Z" fill="currentColor" />
               </svg>
               AR 실행
             </button>
-            <a class="button" href="./Divide_B_260513.glb" download>
+            <a class="button" href="#" data-pending="홈페이지 URL을 추가해 주세요.">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M11 4h2v8.2l2.9-2.9 1.4 1.4L12 16l-5.3-5.3 1.4-1.4 2.9 2.9V4Zm-5 14h12v2H6v-2Z" fill="currentColor" />
+                <path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm6.7 8h-3.1a14.7 14.7 0 0 0-1.1-5 7 7 0 0 1 4.2 5ZM12 5.1c.6.8 1.3 2.6 1.6 5.9h-3.2c.3-3.3 1-5.1 1.6-5.9ZM5.3 13h3.1c.1 1.8.5 3.5 1.1 5a7 7 0 0 1-4.2-5Zm3.1-2H5.3a7 7 0 0 1 4.2-5 14.7 14.7 0 0 0-1.1 5Zm3.6 7.9c-.6-.8-1.3-2.6-1.6-5.9h3.2c-.3 3.3-1 5.1-1.6 5.9Zm2.5-.9c.6-1.5 1-3.2 1.1-5h3.1a7 7 0 0 1-4.2 5Z" fill="currentColor" />
               </svg>
-              GLB 확인
+              홈페이지 연결
             </a>
-            <a class="button" href="./Divide_B_260513.usdz" rel="ar">
+            <a class="button" href="#" data-pending="이메일 주소를 추가해 주세요.">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v14h10V5H7Zm2 2h6v2H9V7Zm0 4h6v2H9v-2Zm0 4h4v2H9v-2Z" fill="currentColor" />
+                <path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm0 2v.4l8 5.1 8-5.1V7H4Zm0 2.8V17h16V9.8l-8 5.1-8-5.1Z" fill="currentColor" />
               </svg>
-              USDZ 확인
+              이메일 문의
             </a>
-            <button id="copyButton" class="button" type="button">
+            <a class="button" href="#" data-pending="제품 자료 파일을 추가해 주세요.">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8 7a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-1v-2h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v1H8V7Zm-5 4a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-7Zm3-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H6Z" fill="currentColor" />
+                <path d="M6 2h9l5 5v15H6V2Zm8 2H8v16h10V8h-4V4Zm-3 7h2v4.2l1.9-1.9 1.4 1.4L12 19l-4.3-4.3 1.4-1.4 1.9 1.9V11Z" fill="currentColor" />
               </svg>
-              링크 복사
-            </button>
+              제품 자료
+            </a>
           </nav>
 
-          <section class="diagnostics">
-            <h2>배포 전 확인</h2>
-            <table class="file-table" aria-label="모델 파일 경로">
+          <section class="content-block">
+            <h2>제품 Spec</h2>
+            <table class="spec-table" aria-label="제품 Spec">
               <tr>
-                <th>GLB</th>
-                <td><code>./Divide_B_260513.glb</code></td>
+                <th>Freq</th>
+                <td>추가 예정</td>
               </tr>
               <tr>
-                <th>USDZ</th>
-                <td><code>./Divide_B_260513.usdz</code></td>
+                <th>Return loss</th>
+                <td>추가 예정</td>
               </tr>
               <tr>
-                <th>QR</th>
-                <td><code id="pageUrl">현재 페이지 URL</code></td>
+                <th>Insertion loss</th>
+                <td>추가 예정</td>
               </tr>
             </table>
           </section>
 
-          <section class="diagnostics">
-            <h2>AR 로딩 문제 체크</h2>
-            <ol class="checklist">
-              <li>QR URL은 공개 HTTPS 주소여야 합니다.</li>
-              <li>서버 MIME은 GLB <code>model/gltf-binary</code>, USDZ <code>model/vnd.usdz+zip</code>로 설정합니다.</li>
-              <li>파일명과 경로에는 공백, 한글, 특수문자를 피합니다.</li>
-              <li>GLB는 glTF Validator에서 오류가 없어야 합니다.</li>
-              <li>iPhone 인앱 브라우저에서 실패하면 Safari로 다시 엽니다.</li>
-              <li>Android에서 실패하면 Chrome, ARCore 지원 여부, 파일 용량과 텍스처 크기를 확인합니다.</li>
-            </ol>
+          <section class="content-block">
+            <h2>제품의 상세 설명</h2>
+            <p class="detail-copy">제품의 상세 설명</p>
           </section>
         </aside>
       </main>
@@ -457,14 +456,12 @@
       const errorBox = document.querySelector("#errorBox");
       const browserNotice = document.querySelector("#browserNotice");
       const openArButton = document.querySelector("#openArButton");
-      const copyButton = document.querySelector("#copyButton");
-      const pageUrl = document.querySelector("#pageUrl");
 
       const userAgent = navigator.userAgent || "";
       const isInAppBrowser = /Instagram|FBAN|FBAV|KAKAOTALK|Line\/|NAVER|DaumApps/i.test(userAgent);
-      const isIOS = /iPad|iPhone|iPod/.test(userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
-      pageUrl.textContent = location.href;
+      const isIOS =
+        /iPad|iPhone|iPod/.test(userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
       if (isInAppBrowser) {
         browserNotice.classList.add("visible");
@@ -492,7 +489,7 @@
 
       viewer.addEventListener("ar-status", (event) => {
         if (event.detail.status === "failed") {
-          showError("AR 실행에 실패했습니다. 기기의 기본 브라우저에서 다시 열고 GLB/USDZ 파일 접근 여부를 확인하세요.");
+          showError("AR 실행에 실패했습니다. 기본 브라우저에서 다시 열고 GLB/USDZ 파일 접근 여부를 확인하세요.");
         }
       });
 
@@ -508,16 +505,13 @@
         }
       });
 
-      copyButton.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(location.href);
-          copyButton.textContent = "복사 완료";
-          window.setTimeout(() => {
-            copyButton.textContent = "링크 복사";
-          }, 1600);
-        } catch (error) {
-          showError("브라우저 권한 때문에 링크 복사에 실패했습니다. 주소창의 URL을 사용해 주세요.");
-        }
+      document.querySelectorAll("[data-pending]").forEach((link) => {
+        link.addEventListener("click", (event) => {
+          if (link.getAttribute("href") === "#") {
+            event.preventDefault();
+            showError(link.dataset.pending);
+          }
+        });
       });
 
       if (!window.isSecureContext && location.protocol !== "file:") {
