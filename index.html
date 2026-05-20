@@ -227,26 +227,6 @@
         height: 18px;
       }
 
-      .ios-ar-link {
-        display: none;
-      }
-
-      .ios-mode .ios-ar-link {
-        display: inline-flex;
-      }
-
-      .ios-mode #openArButton {
-        display: none;
-      }
-
-      .ar-preview-proxy {
-        width: 1px;
-        height: 1px;
-        opacity: 0;
-        position: absolute;
-        pointer-events: none;
-      }
-
       .notice,
       .content-block {
         border: 1px solid var(--line);
@@ -379,7 +359,6 @@
           <model-viewer
             id="viewer"
             src="./Divide_B_260513.glb"
-            ios-src="./Divide_B_260513.usdz"
             alt="Product 3D model"
             camera-controls
             touch-action="pan-y"
@@ -418,18 +397,6 @@
           <div id="errorBox" class="notice"></div>
 
           <nav class="actions" aria-label="Product actions">
-            <a id="iosArLink" class="button primary ios-ar-link" href="./Divide_B_260513.usdz" rel="ar" aria-label="Launch AR">
-              <img
-                class="ar-preview-proxy"
-                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                alt=""
-                aria-hidden="true"
-              />
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Zm0 2.3 4.9 2.7L12 10.7 7.1 8 12 5.3Zm-5.8 5 4.8 2.6v5.3l-4.8-2.7v-5.2Zm6.8 7.9v-5.3l4.8-2.6v5.2L13 18.2Z" fill="currentColor" />
-              </svg>
-              Launch AR
-            </a>
             <button id="openArButton" class="button primary" type="button">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Zm0 2.3 4.9 2.7L12 10.7 7.1 8 12 5.3Zm-5.8 5 4.8 2.6v5.3l-4.8-2.7v-5.2Zm6.8 7.9v-5.3l4.8-2.6v5.2L13 18.2Z" fill="currentColor" />
@@ -491,13 +458,6 @@
 
       const userAgent = navigator.userAgent || "";
       const isInAppBrowser = /Instagram|FBAN|FBAV|KAKAOTALK|Line\/|NAVER|DaumApps/i.test(userAgent);
-      const isIOS =
-        /iPad|iPhone|iPod/.test(userAgent) ||
-        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
-      if (isIOS) {
-        document.body.classList.add("ios-mode");
-      }
 
       if (isInAppBrowser) {
         browserNotice.classList.add("visible");
@@ -525,7 +485,7 @@
 
       viewer.addEventListener("ar-status", (event) => {
         if (event.detail.status === "failed") {
-          showError("AR launch failed. Please reopen this page in the default browser and check GLB/USDZ file access.");
+          showError("AR launch failed. Please reopen this page in the default browser and check GLB file access.");
         }
       });
 
@@ -533,10 +493,6 @@
         try {
           await viewer.activateAR();
         } catch (error) {
-          if (isIOS) {
-            location.href = viewer.getAttribute("ios-src");
-            return;
-          }
           showError("AR cannot be launched directly. Please reopen this page in Chrome or Safari.");
         }
       });
